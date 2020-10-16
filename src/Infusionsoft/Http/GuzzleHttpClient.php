@@ -9,6 +9,8 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Middleware;
+use GuzzleHttp\RequestOptions;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 class GuzzleHttpClient extends Client implements ClientInterface
@@ -19,7 +21,7 @@ class GuzzleHttpClient extends Client implements ClientInterface
 
     public function __construct($debug, LoggerInterface $httpLogAdapter)
     {
-        $this->debug          = $debug;
+        $this->debug = $debug;
         $this->httpLogAdapter = $httpLogAdapter;
 
         $config = ['timeout' => 60];
@@ -39,10 +41,9 @@ class GuzzleHttpClient extends Client implements ClientInterface
     public function getXmlRpcTransport()
     {
 
-        $adapter = new \Http\Adapter\Guzzle6\Client($this);
+        $adapter = new Client($this);
 
-        return new HttpAdapterTransport(new \Http\Message\MessageFactory\DiactorosMessageFactory(),
-            $adapter);
+        return new HttpAdapterTransport(new \Http\Message\MessageFactory\DiactorosMessageFactory(), $adapter);
     }
 
     /**
@@ -53,23 +54,22 @@ class GuzzleHttpClient extends Client implements ClientInterface
      * @param array $options
      *
      * @return mixed
-     * @throws HttpException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \Infusionsoft\Http\HttpException
      */
-    public function request($method, $uri = null, array $options = [])
+    public function request($method, $uri = '', array $options = []): ResponseInterface
     {
-        if ( ! isset($options['headers'])) {
+        if (!isset($options['headers'])) {
             $options['headers'] = [];
         }
 
-        if ( ! isset($options['body'])) {
+        if (!isset($options['body'])) {
             $options['body'] = null;
         }
 
         try {
-            $request  = new Request($method, $uri, $options['headers'], $options['body']);
-            $response = $this->send($request);
-
-            return $response->getBody();
+            $options[RequestOptions::SYNCHRONOUS] = true;
+            return $this->requestAsync($method, $uri, $options)->wait();
         } catch (BadResponseException $e) {
             throw new HttpException($e->getMessage(), $e->getCode(), $e);
         }

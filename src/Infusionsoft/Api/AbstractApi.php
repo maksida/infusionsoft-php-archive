@@ -4,11 +4,20 @@ namespace Infusionsoft\Api;
 
 use Infusionsoft\Infusionsoft;
 
-abstract class AbstractApi {
-
-	public function __construct(Infusionsoft $client)
-	{
-		$this->client = $client;
-	}
-
+/**
+ * Class AbstractApi
+ * @property \Infusionsoft\Infusionsoft client
+ * @package Infusionsoft\Api
+ */
+abstract class AbstractApi
+{
+    /**
+     * AbstractApi constructor.
+     *
+     * @param \Infusionsoft\Infusionsoft $client
+     */
+    public function __construct(Infusionsoft $client)
+    {
+        $this->client = $client;
+    }
 }
