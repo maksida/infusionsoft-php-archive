@@ -1,5 +1,5 @@
 {
-    "name": "infusionsoft/php-sdk",
+    "name": "nexusmerchants/infusionsoft-php",
     "description": "PHP SDK for the Infusionsoft",
     "keywords": [
         "infusionsoft",
@@ -11,6 +11,11 @@
         {
             "name": "Infusionsoft",
             "homepage": "https://developer.infusionsoft.com"
+        },
+        {
+            "name": "Peter Harlacher",
+            "email": "peter@nexusmerchants.com",
+            "homepage": "https://www.nexusmerchants.com"
         }
     ],
     "require": {
