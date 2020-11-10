@@ -319,7 +319,7 @@ class Infusionsoft
         $tokenInfo = $client->request('POST', $this->tokenUri,
             ['body' => http_build_query($params), 'headers' => $headers]);
 
-        $this->setToken(new Token(json_decode($tokenInfo, true)));
+        $this->setToken(new Token(json_decode($tokenInfo->getBody(), true)));
 
         return $this->getToken();
     }
