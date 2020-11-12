@@ -18,21 +18,22 @@ class GuzzleHttpClient extends Client implements ClientInterface
 
     public $debug;
     public $httpLogAdapter;
+    protected $config;
 
     public function __construct($debug, LoggerInterface $httpLogAdapter)
     {
         $this->debug = $debug;
         $this->httpLogAdapter = $httpLogAdapter;
 
-        $config = ['timeout' => 60];
+        $this->config = ['timeout' => 60];
         if ($this->debug) {
-            $config['handler'] = HandlerStack::create();
-            $config['handler']->push(
+            $this->config['handler'] = HandlerStack::create();
+            $this->config['handler']->push(
                 Middleware::log($this->httpLogAdapter, new MessageFormatter(MessageFormatter::DEBUG))
             );
         }
 
-        parent::__construct($config);
+        parent::__construct($this->config);
     }
 
     /**
@@ -40,10 +41,10 @@ class GuzzleHttpClient extends Client implements ClientInterface
      */
     public function getXmlRpcTransport()
     {
-
-        $adapter = new Client($this);
-
-        return new HttpAdapterTransport(new \Http\Message\MessageFactory\DiactorosMessageFactory(), $adapter);
+        return new HttpAdapterTransport(
+            new \Http\Message\MessageFactory\DiactorosMessageFactory(),
+            new \Http\Adapter\Guzzle7\Client(new Client($this->config))
+        );
     }
 
     /**
